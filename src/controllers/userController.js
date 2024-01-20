@@ -45,7 +45,7 @@ const userController = {
   },
   getUserById: async (req, res) => {
     const {id} = req.params
-    console.log(id)
+    
     const content = await userService.getUserById(id)
 
     if (content.status === 'warn') {

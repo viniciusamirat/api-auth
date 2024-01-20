@@ -58,7 +58,6 @@ const createUser = async (name, email, password) => {
     return result.get()
 
   } catch (err) {
-    console.log(`Error to create user: ${err}`)
     result.setError()
     return result.get()
   }
@@ -93,7 +92,6 @@ const login = async (email, password) => {
     return result.get()
 
   } catch (err) {
-    console.log(`Error to login: ${err}`)
     result.setError()
     return result.get()
   }
@@ -112,7 +110,6 @@ const getUserByEmail = async (email) => {
     return result.get()
 
   } catch (err) {
-    console.log(`Error to create user: ${err}`)
     result.setError()
     return result.get()
   }
@@ -137,7 +134,6 @@ const getUserById = async (id) => {
     return result.get()
 
   } catch (err) {
-    console.log(`Error to get user: ${err}`)
     result.setError()
     return result.get()
   }
@@ -160,7 +156,6 @@ const getUsers = async () => {
     return result.get()
 
   } catch (err) {
-    console.log(`Error to create user: ${err}`)
     result.setError()
     return result.get()
   }
@@ -194,7 +189,6 @@ const updateUserById = async (id, user) => {
     return result.get()
 
   } catch (err) {
-    console.log(`Error to create user: ${err}`)
     result.setError()
     return result.get()
   }
@@ -223,7 +217,6 @@ const deleteUserById = async (id) => {
     return result.get()
 
   } catch (err) {
-    console.log(`Error to create user: ${err}`)
     result.setError()
     return result.get()
   }
