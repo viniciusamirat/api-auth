@@ -13,13 +13,15 @@ You need to have docker installed.
 
 Create the docker image:
 ```
-docker build api-auth .
+docker build -t api-auth .
 ```
 
 Creating and running the container:
 ```
 docker run --name api -p 3030:3030 -d api-auth
 ```
+
+Go to http://localhost:3030/api/docs to view the endpoints.
 
 ## Technologies
 
