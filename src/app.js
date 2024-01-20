@@ -1,6 +1,11 @@
 import express from 'express'
 const app = express()
 
+import swagger from 'swagger-ui-express'
+import swaggerJson from '../swagger.json' assert {type: 'json'}
+
+app.use('/api/docs', swagger.serve, swagger.setup(swaggerJson))
+
 import cors from 'cors'
 app.use(cors())
 

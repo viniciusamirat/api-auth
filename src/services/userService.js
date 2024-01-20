@@ -1,20 +1,19 @@
+'use strict'
+
 import userModel from '../models/userModel.js'
 import Result from '../utils/result.js'
 import jwt from 'jsonwebtoken'
+import bcrypt from 'bcrypt'
 import dotenv from 'dotenv'
 dotenv.config()
 
-const createUser = async (email, password) => {
+const createUser = async (name, email, password) => {
   let result = new Result()
 
   try {
 
     const newEmail = email.trim().toLowerCase()
-    
-    const user = {
-      email: newEmail,
-      pass: password
-    }
+    const newName = name.trim().toLowerCase()
 
     const userContent = await getUserByEmail(newEmail)
 
@@ -27,6 +26,15 @@ const createUser = async (email, password) => {
         return result.get()
       }
       
+    }
+  
+    const salt = bcrypt.genSaltSync(12)
+    const newPass = bcrypt.hashSync(password, salt)
+
+    const user = {
+      name: newName,
+      email: newEmail,
+      pass: newPass
     }
 
     const createdContent = await userModel.create(user)
@@ -42,14 +50,50 @@ const createUser = async (email, password) => {
     )
 
     result.setSuccess({
+      id: createdContent._id,
+      name: createdContent.name,
       email: createdContent.email,
-      password: createdContent.pass,
       token: token
     })
     return result.get()
 
   } catch (err) {
     console.log(`Error to create user: ${err}`)
+    result.setError()
+    return result.get()
+  }
+}
+
+const login = async (email, password) => {
+  let result = new Result()
+
+  try {
+    
+    const newEmail = email.trim().toLowerCase()
+
+    const content = await getUserByEmail(newEmail)
+
+    const userFromDB = content.content
+
+    const allowed =  bcrypt.compareSync(password, userFromDB.pass)
+
+    if (!allowed) {
+      result.setError()
+    } else {
+      const token = await jwt.sign({email: newEmail}, process.env.JWT_SECRET, {expiresIn: '1d'})
+
+      const user = {
+        email: newEmail,
+        token: token
+      }
+
+      result.setSuccess(user)
+    }
+
+    return result.get()
+
+  } catch (err) {
+    console.log(`Error to login: ${err}`)
     result.setError()
     return result.get()
   }
@@ -74,7 +118,123 @@ const getUserByEmail = async (email) => {
   }
 }
 
+const getUserById = async (id) => {
+  let result = new Result()
+
+  try{
+
+    const newId = id.trim()
+
+    const content = await userModel.findById(newId)
+
+    const user = {
+      id: content._id,
+      name: content.name,
+      email: content.email,
+    }
+
+    result.setSuccess(user)
+    return result.get()
+
+  } catch (err) {
+    console.log(`Error to get user: ${err}`)
+    result.setError()
+    return result.get()
+  }
+}
+
+const getUsers = async () => {
+  let result = new Result()
+
+  try{
+
+    let users = []
+
+    const content = await userModel.find()
+
+    if (content) {
+      users = content.map((item) => ({id: item._id, name: item?.name || '', email: item.email}))
+    }
+
+    result.setSuccess(users)
+    return result.get()
+
+  } catch (err) {
+    console.log(`Error to create user: ${err}`)
+    result.setError()
+    return result.get()
+  }
+}
+
+const updateUserById = async (id, user) => {
+  let result = new Result()
+
+  try{
+
+    let user = {}
+    
+    const newId = id.trim()
+
+    const newUser = {
+      name: user.name.trim().toLowerCase(),
+      email: user.email.trim().toLowerCase()
+    }
+
+    const content = await userModel.findByIdAndUpdate(newId, newUser)
+
+    if (content) {
+      user = {
+        id: content._id,
+        name: content.name,
+        email: content.email
+      }
+    }
+
+    result.setSuccess(user)
+    return result.get()
+
+  } catch (err) {
+    console.log(`Error to create user: ${err}`)
+    result.setError()
+    return result.get()
+  }
+}
+
+const deleteUserById = async (id) => {
+  let result = new Result()
+
+  try{
+
+    let user = {}
+
+    const newId = id.trim()
+
+    const content = await userModel.findByIdAndDelete(newId)
+
+    if (content) {
+      user = {
+        id: content._id,
+        name: content.name,
+        email: content.email
+      }
+    }
+
+    result.setSuccess(user)
+    return result.get()
+
+  } catch (err) {
+    console.log(`Error to create user: ${err}`)
+    result.setError()
+    return result.get()
+  }
+}
+
 export default {
   createUser,
-  getUserByEmail
+  login,
+  getUserByEmail,
+  getUserById,
+  getUsers,
+  updateUserById,
+  deleteUserById
 }
