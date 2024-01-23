@@ -1,6 +1,4 @@
 import app from './src/app.js'
-// import dotenv from 'dotenv'
-// console.log(dotenv.config())
 
 const SERVER_PORT = process.env.SERVER_PORT
 

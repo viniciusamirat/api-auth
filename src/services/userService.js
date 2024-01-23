@@ -64,7 +64,7 @@ const createUser = async (name, email, password) => {
 }
 
 const login = async (email, password) => {
-  let result = new Result()
+  //let result = new Result()
 
   try {
     
